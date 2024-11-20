@@ -9,7 +9,7 @@ from pydub import AudioSegment
 from pydub.playback import play
 import whisper
 import subprocess
-
+import cv2
 
 # Load the tiny English model
 model = whisper.load_model("tiny.en")
@@ -35,15 +35,52 @@ print(board)
 stockfish = Stockfish(path=r"/home/chadi/projects/tsyp/stockfish/src/stockfish")
 stockfish.set_skill_level(15)
 
+image = "pic.jpg"
+
+
+def takepic(output_path="captured_image.jpg", camera_index=0):
+    """
+    Captures a picture from the specified camera and saves it.
+
+    Parameters:
+        output_path (str): The path where the captured image will be saved.
+        camera_index (int): The index of the camera to use (0 for default).
+
+    Returns:
+        str: The path of the saved image if successful, None otherwise.
+    """
+    # Open the camera
+    camera = cv2.VideoCapture(camera_index)
+
+    if not camera.isOpened():
+        print("Error: Could not access the camera.")
+        return None
+
+    # Capture a single frame
+    ret, frame = camera.read()
+
+    if ret:
+        # Save the captured frame
+        cv2.imwrite(output_path, frame)
+        print(f"Image saved as {output_path}")
+        result = output_path
+    else:
+        print("Error: Could not capture an image.")
+        result = None
+
+    # Release the camera
+    camera.release()
+
+    return result
+
 
 def posiblemove(name, board):
-    moves = list(board.legal_moves)
-    l = []
+    l = str(name) + "/y,"
     for move in moves:
         h = str(move)
         if (name in h) and (h.index(name) == 0):
-            l.append(h[len(name) : len(name) + 2])
-    return l
+            l += str(h[len(name) : len(name) + 2]) + "/b,"
+    return l[: len(l) - 1]
 
 
 def find_move(fen1, fen2):
@@ -170,15 +207,20 @@ while not board.is_game_over():
 
     ev1 = stockfish.get_evaluation()
     if round % 2 == playercolore:
-        takepic()
+        takepic(image)
         command = ["python3", "chess_cv.py", "pic.jpg"]
         result = subprocess.run(command, capture_output=True, text=True, check=True)
         move, legal = find_move(fen, fen2)
         while not legal:
             l = []
             move = str(find_illegal_move(fen, fen2))
+            # this is for the led
             l = posiblemove(move[:2], board)
-            led(l)
+            command = ["sudo", "screen", "/dev/ttyACM0", "9600"]
+            subprocess.run(command)
+            command = ["echo", l, ">", "/dev/ttyACM0"]
+            subprocess.run(command)
+
             content = f"this is the fen of the game {fen}, explain why this move is ilalegal and explain how that peace move acourding to chess rules in short pargraph"
             chat_completion = client.chat.completions.create(
                 messages=[{"role": "user", "content": content}],
@@ -190,13 +232,16 @@ while not board.is_game_over():
             t1.save("welcome.mp3")
             song = AudioSegment.from_mp3("welcome.mp3")
             play(song)
-            takepic()
+            takepic(image)
             command = ["python3", "chess_cv.py", "pic.jpg"]
             result = subprocess.run(command, capture_output=True, text=True, check=True)
+            fen2 = result.stdout
             move, legal = find_move(fen, fen2)
     else:
         best_move = stockfish.get_best_move_time(1000)
         move = chess.Move.from_uci(best_move)
+        command = ["python3", "armcode.py", "pic.jpg"]
+        result = subprocess.run(command, capture_output=True, text=True, check=True)
     board.push(move)
     fen = board.fen()
     stockfish.set_fen_position(fen)
