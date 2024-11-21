@@ -1,7 +1,7 @@
 # Chess Arm Powered by LLaMA 3 70B and Stockfish
 
-![Chess Arm](board.jpg) *(Replace with an actual image of your project)*
-
+![Chess Arm](board.jpg)
+![Chess Arm](arm.jpg)
 ## 🚀 Overview  
 This project is a **robotic chess arm** that combines cutting-edge AI technologies to provide an interactive, educational, and exciting chess-playing experience. The arm is powered by **LLaMA 3 70B** and **Stockfish**, offering features like real-time board analysis, move recommendations, and chess coaching through an intelligent assistant named **Lua**.
 
