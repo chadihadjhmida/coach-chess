@@ -27,12 +27,12 @@ client = Groq(
 
 # i'm just tasting the how stockfish work idk i'm just testing
 engine = chess.engine.SimpleEngine.popen_uci(
-    r"/home/chadi/projects/tsyp/stockfish/src/stockfish"
+    r"path/to/your/stockfish"
 )
 board = Board()
 print(board)
 # this is stockfish say hello
-stockfish = Stockfish(path=r"/home/chadi/projects/tsyp/stockfish/src/stockfish")
+stockfish = Stockfish(path=r"/path/to/your/stockfish")
 stockfish.set_skill_level(10)
 
 
