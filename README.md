@@ -47,3 +47,26 @@ This project is a **robotic chess arm** that combines cutting-edge AI technologi
   - Robotic arm for physical gameplay.  
 
 ---
+## Requirements 🛠️
+
+The following modules must be installed to use this project:
+
+```bash
+pip install keras
+pip install -U matplotlib
+pip install numpy
+pip install opencv-contrib-python
+pip install chess
+pip install scipy
+pip install tensorflow
+pip install wand
+pip install Groq
+pip install gtts
+pip install pydub
+pip install whisper
+pip install subprocess
+pip install cv2
+pip install opencv-python
+```
+### Additional Requirements:
+- You need a **Groq API key** to access certain features of this project. Ensure you have your API key set up before proceeding.
